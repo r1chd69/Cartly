@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     private val favouriteNames = mutableSetOf<String>()
     private lateinit var dealsContainer: LinearLayout
     private lateinit var locationLabel: TextView
+    private lateinit var swipeRefresh: SwipeRefreshLayout
     private var selectedStore = "All"
     private var searchQuery = ""
     private val filterButtons = mutableListOf<TextView>()
@@ -31,6 +33,15 @@ class MainActivity : AppCompatActivity() {
 
         dealsContainer = findViewById(R.id.dealsContainer)
         locationLabel = findViewById(R.id.locationLabel)
+        swipeRefresh = findViewById(R.id.swipeRefresh)
+
+        swipeRefresh.setColorSchemeColors(
+            ContextCompat.getColor(this, R.color.cartlyGreen)
+        )
+
+        swipeRefresh.setOnRefreshListener {
+            loadFavourites()
+        }
 
         val prefs = getSharedPreferences("CartlyPrefs", Context.MODE_PRIVATE)
         locationLabel.text = prefs.getString("location", "Sandton, Johannesburg")
@@ -121,9 +132,11 @@ class MainActivity : AppCompatActivity() {
                     ))
                 }
                 filterDeals()
+                swipeRefresh.isRefreshing = false
             }
             .addOnFailureListener { e ->
                 android.util.Log.e("CARTLY", "Error: $e")
+                swipeRefresh.isRefreshing = false
             }
     }
 
