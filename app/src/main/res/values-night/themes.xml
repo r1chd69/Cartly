@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Base.Theme.Cartly" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">#1D9E75</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#085041</item>
+        <item name="colorOnPrimaryContainer">#9FE1CB</item>
+        <item name="colorSecondary">#1D9E75</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorTertiary">#F09595</item>
+        <item name="colorOnTertiary">#FFFFFF</item>
+        <item name="android:colorBackground">#121212</item>
+        <item name="colorOnBackground">#FFFFFF</item>
+        <item name="colorSurface">#1E1E1E</item>
+        <item name="colorOnSurface">#FFFFFF</item>
+        <item name="colorError">#E24B4A</item>
+        <item name="android:statusBarColor">#0F6E56</item>
+    </style>
+
+    <style name="Theme.Cartly" parent="Base.Theme.Cartly"/>
+</resources>
