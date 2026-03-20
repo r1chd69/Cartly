@@ -24,7 +24,7 @@ Cartly helps South Africans find the best grocery deals and specials from stores
 
 ## ✨ Features
 
-- 🔴 **Live grocery deals** from Checkers, Pick n Pay, Shoprite and Spar
+- 🔴 **Live grocery deals** from Checkers, Pick n Pay, Shoprite and Spar (hardcode)
 - 🔍 **Search** for specific products instantly
 - 🏪 **Filter by store** to see deals from your favourite store
 - ❤️ **Save favourite deals** that sync across sessions
@@ -51,10 +51,10 @@ Head to the [Releases](../../releases) page to download the latest APK.
 
 ## 🗺️ Roadmap
 
-- [ ] Automatic price scraping from store websites
+- [ ] Automatic price scraping from store websites 
 - [ ] Product categories
-- [ ] Real product images
-- [ ] Location based store detection
+- [ ] Real product images 
+- [ ] Location based store detection 
 - [ ] Google Play Store release
 - [ ] Price comparison between stores
 - [ ] User submitted prices
