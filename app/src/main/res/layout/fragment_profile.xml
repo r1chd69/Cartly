@@ -19,22 +19,12 @@
             android:gravity="center_vertical">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="My Profile"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
                 android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/btnProfileSettings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="⚙"
-                android:textColor="#FFFFFF"
-                android:textSize="22sp"
-                android:padding="8dp"/>
 
         </LinearLayout>
 
@@ -82,7 +72,36 @@
                 android:textStyle="bold"
                 android:background="@color/cartlyGreen"
                 android:gravity="center"
-                android:padding="16dp"/>
+                android:padding="16dp"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:id="@+id/btnSettingsBarSignedOut"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/cardBackground"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical"
+                android:elevation="4dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="⚙ Settings"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/textPrimary"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="→"
+                    android:textSize="18sp"
+                    android:textColor="@color/textSecondary"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -205,6 +224,38 @@
                         android:gravity="center"/>
 
                 </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- SETTINGS BAR -->
+            <LinearLayout
+                android:id="@+id/btnSettingsBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/cardBackground"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="12dp"
+                android:elevation="4dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="⚙ Settings"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/textPrimary"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="→"
+                    android:textSize="18sp"
+                    android:textColor="@color/textSecondary"/>
 
             </LinearLayout>
 

@@ -86,11 +86,15 @@ class ProfileFragment : Fragment() {
             updateUI()
         }
 
-        val btnSettings = view.findViewById<TextView>(R.id.btnProfileSettings)
-        btnSettings.setOnClickListener {
+        val btnSettingsBar = view.findViewById<LinearLayout>(R.id.btnSettingsBar)
+        btnSettingsBar.setOnClickListener {
             startActivity(Intent(requireContext(), SettingsActivity::class.java))
         }
 
+        val btnSettingsBarSignedOut = view.findViewById<LinearLayout>(R.id.btnSettingsBarSignedOut)
+        btnSettingsBarSignedOut.setOnClickListener {
+            startActivity(Intent(requireContext(), SettingsActivity::class.java))
+        }
         updateUI()
         loadStats()
     }

@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.graphics.Paint
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
@@ -61,16 +62,6 @@ class DealsFragment : Fragment() {
         val prefs = requireContext().getSharedPreferences("CartlyPrefs", Context.MODE_PRIVATE)
         locationLabel.text = prefs.getString("location", "Sandton, Johannesburg")
 
-        val searchBar = view.findViewById<EditText>(R.id.searchBar)
-        searchBar.addTextChangedListener { text ->
-            searchQuery = text.toString()
-            filterDeals()
-        }
-
-        val btnSettings = view.findViewById<TextView>(R.id.btnSettings)
-        btnSettings.setOnClickListener {
-            startActivity(Intent(requireContext(), SettingsActivity::class.java))
-        }
 
         val filterAll = view.findViewById<TextView>(R.id.filterAll)
         val filterCheckers = view.findViewById<TextView>(R.id.filterCheckers)
@@ -149,6 +140,7 @@ class DealsFragment : Fragment() {
         db.collection("favourites")
             .get()
             .addOnSuccessListener { result ->
+                if (!isAdded) return@addOnSuccessListener
                 favouriteNames.clear()
                 for (document in result) {
                     val name = document.getString("name") ?: ""
@@ -159,11 +151,11 @@ class DealsFragment : Fragment() {
                 loadDealsFromFirebase()
             }
     }
-
     private fun loadDealsFromFirebase() {
         db.collection("deals")
             .get()
             .addOnSuccessListener { result ->
+                if (!isAdded) return@addOnSuccessListener
                 allDeals.clear()
                 for (document in result) {
                     allDeals.add(mapOf(
@@ -177,27 +169,25 @@ class DealsFragment : Fragment() {
                         "category" to (document.getString("category") ?: "Other")
                     ))
                 }
+                if (!isAdded) return@addOnSuccessListener
                 val categories = allDeals.map { it["category"] ?: "Other" }
                 buildCategoryButtons(categories)
                 swipeRefresh.isRefreshing = false
                 filterDeals()
             }
             .addOnFailureListener { e ->
+                if (!isAdded) return@addOnFailureListener
                 swipeRefresh.isRefreshing = false
                 android.util.Log.e("CARTLY", "Error: $e")
             }
     }
-
     private fun filterDeals() {
         dealsContainer.removeAllViews()
 
         val filtered = allDeals.filter { deal ->
             val matchesStore = selectedStore == "All" || deal["store"] == selectedStore
             val matchesCategory = selectedCategory == "All" || deal["category"] == selectedCategory
-            val matchesSearch = searchQuery.isEmpty() ||
-                    deal["name"]!!.contains(searchQuery, ignoreCase = true) ||
-                    deal["store"]!!.contains(searchQuery, ignoreCase = true)
-            matchesStore && matchesCategory && matchesSearch
+            matchesStore && matchesCategory
         }
 
         if (filtered.isEmpty()) {
@@ -370,6 +360,7 @@ class DealsFragment : Fragment() {
             text = priceWas
             textSize = 12f
             setTextColor(ContextCompat.getColor(requireContext(), R.color.textSecondary))
+            paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
         }
 
         priceLayout.addView(priceNowView)

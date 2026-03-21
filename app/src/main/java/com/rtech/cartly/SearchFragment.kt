@@ -193,16 +193,31 @@ class SearchFragment : Fragment() {
         infoLayout.addView(storeView)
         infoLayout.addView(discountView)
 
-        val priceView = TextView(requireContext()).apply {
+        val priceLayout = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.END
+        }
+
+        val priceNowView = TextView(requireContext()).apply {
             text = priceNow
             textSize = 15f
             setTextColor(ContextCompat.getColor(requireContext(), R.color.cartlyGreen))
             setTypeface(null, android.graphics.Typeface.BOLD)
         }
 
+        val priceWasView = TextView(requireContext()).apply {
+            text = priceWas
+            textSize = 12f
+            setTextColor(ContextCompat.getColor(requireContext(), R.color.textSecondary))
+            paintFlags = paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+        }
+
+        priceLayout.addView(priceNowView)
+        priceLayout.addView(priceWasView)
+
         card.addView(emojiView)
         card.addView(infoLayout)
-        card.addView(priceView)
+        card.addView(priceLayout)
 
         return card
     }
