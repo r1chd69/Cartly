@@ -12,7 +12,20 @@
           "package_name": "com.rtech.cartly"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "179083447885-5fdoa36kei3ipt5r4gfnttc1ohii1dca.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rtech.cartly",
+            "certificate_hash": "15d3e3823659e2381222492762edcf12a3645d0a"
+          }
+        },
+        {
+          "client_id": "179083447885-u0hm3n142q61hgbovbgudlfanqs55sgn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCjJT7nJ9hSkY3ftdN7hTkDn3sxjeU0Sn0"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "179083447885-u0hm3n142q61hgbovbgudlfanqs55sgn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

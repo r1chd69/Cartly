@@ -2,9 +2,14 @@ package com.rtech.cartly
 
 import android.os.Bundle
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.firestore.FirebaseFirestore
 
 class DealDetailActivity : AppCompatActivity() {
+
+    private val db = FirebaseFirestore.getInstance()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_deal_detail)
@@ -27,8 +32,19 @@ class DealDetailActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.detailSaving).text = discount
 
         val btnBack = findViewById<TextView>(R.id.btnBack)
-        btnBack.setOnClickListener {
-            finish()
+        btnBack.setOnClickListener { finish() }
+
+        val btnAddToBasket = findViewById<TextView>(R.id.btnAddToBasket)
+        btnAddToBasket.setOnClickListener {
+            db.collection("basket").add(mapOf(
+                "name" to name,
+                "price" to priceNow,
+                "store" to store,
+                "emoji" to emoji,
+                "checked" to "false"
+            )).addOnSuccessListener {
+                Toast.makeText(this, "$name added to basket!", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

@@ -6,17 +6,19 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.firebase.firestore.FirebaseFirestore
 
-class MainActivity : AppCompatActivity() {
+class DealsFragment : Fragment() {
 
     private val db = FirebaseFirestore.getInstance()
     private val allDeals = mutableListOf<Map<String, String>>()
@@ -30,17 +32,24 @@ class MainActivity : AppCompatActivity() {
     private var searchQuery = ""
     private val filterButtons = mutableListOf<TextView>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_deals, container, false)
+    }
 
-        dealsContainer = findViewById(R.id.dealsContainer)
-        locationLabel = findViewById(R.id.locationLabel)
-        swipeRefresh = findViewById(R.id.swipeRefresh)
-        categoryContainer = findViewById(R.id.categoryContainer)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        dealsContainer = view.findViewById(R.id.dealsContainer)
+        locationLabel = view.findViewById(R.id.locationLabel)
+        swipeRefresh = view.findViewById(R.id.swipeRefresh)
+        categoryContainer = view.findViewById(R.id.categoryContainer)
 
         swipeRefresh.setColorSchemeColors(
-            ContextCompat.getColor(this, R.color.cartlyGreen)
+            ContextCompat.getColor(requireContext(), R.color.cartlyGreen)
         )
 
         swipeRefresh.setOnRefreshListener {
@@ -49,25 +58,25 @@ class MainActivity : AppCompatActivity() {
             loadFavourites()
         }
 
-        val prefs = getSharedPreferences("CartlyPrefs", Context.MODE_PRIVATE)
+        val prefs = requireContext().getSharedPreferences("CartlyPrefs", Context.MODE_PRIVATE)
         locationLabel.text = prefs.getString("location", "Sandton, Johannesburg")
 
-        val searchBar = findViewById<EditText>(R.id.searchBar)
+        val searchBar = view.findViewById<EditText>(R.id.searchBar)
         searchBar.addTextChangedListener { text ->
             searchQuery = text.toString()
             filterDeals()
         }
 
-        val btnSettings = findViewById<TextView>(R.id.btnSettings)
+        val btnSettings = view.findViewById<TextView>(R.id.btnSettings)
         btnSettings.setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
+            startActivity(Intent(requireContext(), SettingsActivity::class.java))
         }
 
-        val filterAll = findViewById<TextView>(R.id.filterAll)
-        val filterCheckers = findViewById<TextView>(R.id.filterCheckers)
-        val filterPnP = findViewById<TextView>(R.id.filterPnP)
-        val filterShoprite = findViewById<TextView>(R.id.filterShoprite)
-        val filterSpar = findViewById<TextView>(R.id.filterSpar)
+        val filterAll = view.findViewById<TextView>(R.id.filterAll)
+        val filterCheckers = view.findViewById<TextView>(R.id.filterCheckers)
+        val filterPnP = view.findViewById<TextView>(R.id.filterPnP)
+        val filterShoprite = view.findViewById<TextView>(R.id.filterShoprite)
+        val filterSpar = view.findViewById<TextView>(R.id.filterSpar)
 
         filterButtons.addAll(listOf(filterAll, filterCheckers, filterPnP, filterShoprite, filterSpar))
         val filterNames = listOf("All", "Checkers", "Pick n Pay", "Shoprite", "Spar")
@@ -85,7 +94,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        val prefs = getSharedPreferences("CartlyPrefs", Context.MODE_PRIVATE)
+        val prefs = requireContext().getSharedPreferences("CartlyPrefs", Context.MODE_PRIVATE)
         locationLabel.text = prefs.getString("location", "Sandton, Johannesburg")
     }
 
@@ -101,7 +110,7 @@ class MainActivity : AppCompatActivity() {
                 button.setTextColor(Color.WHITE)
             } else {
                 button.setBackgroundResource(R.drawable.filter_inactive)
-                button.setTextColor(ContextCompat.getColor(this, R.color.cartlyGreen))
+                button.setTextColor(ContextCompat.getColor(requireContext(), R.color.cartlyGreen))
             }
         }
     }
@@ -112,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         val allCategories = listOf("All") + categories.distinct().sorted()
 
         for (category in allCategories) {
-            val btn = TextView(this).apply {
+            val btn = TextView(requireContext()).apply {
                 text = category
                 textSize = 12f
                 setTextColor(if (category == selectedCategory) Color.WHITE else Color.parseColor("#444444"))
@@ -192,10 +201,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (filtered.isEmpty()) {
-            val noResults = TextView(this).apply {
+            val noResults = TextView(requireContext()).apply {
                 text = "No deals found"
                 textSize = 14f
-                setTextColor(ContextCompat.getColor(this@MainActivity, R.color.textSecondary))
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.textSecondary))
                 gravity = Gravity.CENTER
                 setPadding(0, 60, 0, 0)
                 layoutParams = LinearLayout.LayoutParams(
@@ -220,7 +229,7 @@ class MainActivity : AppCompatActivity() {
         if (favouriteNames.contains(name)) {
             favouriteNames.remove(name)
             heartBtn.text = "♡"
-            heartBtn.setTextColor(ContextCompat.getColor(this, R.color.textSecondary))
+            heartBtn.setTextColor(ContextCompat.getColor(requireContext(), R.color.textSecondary))
             db.collection("favourites")
                 .whereEqualTo("name", name)
                 .get()
@@ -245,7 +254,7 @@ class MainActivity : AppCompatActivity() {
 
         val cardBg = if (isDarkMode()) R.drawable.card_background_dark else R.drawable.card_background
 
-        val card = LinearLayout(this).apply {
+        val card = LinearLayout(requireContext()).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundResource(cardBg)
             setPadding(24, 24, 24, 16)
@@ -258,7 +267,7 @@ class MainActivity : AppCompatActivity() {
             elevation = 4f
         }
 
-        val topRow = LinearLayout(this).apply {
+        val topRow = LinearLayout(requireContext()).apply {
             orientation = LinearLayout.HORIZONTAL
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -267,7 +276,7 @@ class MainActivity : AppCompatActivity() {
             isClickable = true
             isFocusable = true
             setOnClickListener {
-                val intent = Intent(this@MainActivity, DealDetailActivity::class.java)
+                val intent = Intent(requireContext(), DealDetailActivity::class.java)
                 intent.putExtra("name", name)
                 intent.putExtra("store", store)
                 intent.putExtra("distance", distance)
@@ -279,7 +288,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val emojiView = TextView(this).apply {
+        val emojiView = TextView(requireContext()).apply {
             text = emoji
             textSize = 32f
             val params = LinearLayout.LayoutParams(
@@ -290,33 +299,33 @@ class MainActivity : AppCompatActivity() {
             layoutParams = params
         }
 
-        val infoLayout = LinearLayout(this).apply {
+        val infoLayout = LinearLayout(requireContext()).apply {
             orientation = LinearLayout.VERTICAL
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         }
 
-        val nameView = TextView(this).apply {
+        val nameView = TextView(requireContext()).apply {
             text = name
             textSize = 14f
-            setTextColor(ContextCompat.getColor(this@MainActivity, R.color.textPrimary))
+            setTextColor(ContextCompat.getColor(requireContext(), R.color.textPrimary))
             setTypeface(null, android.graphics.Typeface.BOLD)
         }
 
-        val storeView = TextView(this).apply {
+        val storeView = TextView(requireContext()).apply {
             text = "$store • $distance away"
             textSize = 12f
-            setTextColor(ContextCompat.getColor(this@MainActivity, R.color.textSecondary))
+            setTextColor(ContextCompat.getColor(requireContext(), R.color.textSecondary))
         }
 
-        val categoryView = TextView(this).apply {
+        val categoryView = TextView(requireContext()).apply {
             text = category
             textSize = 10f
-            setTextColor(ContextCompat.getColor(this@MainActivity, R.color.cartlyGreen))
+            setTextColor(ContextCompat.getColor(requireContext(), R.color.cartlyGreen))
             setBackgroundColor(Color.parseColor("#E1F5EE"))
             setPadding(6, 3, 6, 3)
         }
 
-        val discountView = TextView(this).apply {
+        val discountView = TextView(requireContext()).apply {
             text = discount
             textSize = 11f
             setTextColor(Color.parseColor("#A32D2D"))
@@ -324,12 +333,8 @@ class MainActivity : AppCompatActivity() {
             setPadding(6, 4, 6, 4)
         }
 
-        val tagRow = LinearLayout(this).apply {
+        val tagRow = LinearLayout(requireContext()).apply {
             orientation = LinearLayout.HORIZONTAL
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
             val params = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -339,7 +344,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         tagRow.addView(categoryView)
-        val space = TextView(this).apply {
+        val space = TextView(requireContext()).apply {
             layoutParams = LinearLayout.LayoutParams(8, 1)
         }
         tagRow.addView(space)
@@ -349,22 +354,22 @@ class MainActivity : AppCompatActivity() {
         infoLayout.addView(storeView)
         infoLayout.addView(tagRow)
 
-        val priceLayout = LinearLayout(this).apply {
+        val priceLayout = LinearLayout(requireContext()).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.END
         }
 
-        val priceNowView = TextView(this).apply {
+        val priceNowView = TextView(requireContext()).apply {
             text = priceNow
             textSize = 16f
-            setTextColor(ContextCompat.getColor(this@MainActivity, R.color.cartlyGreen))
+            setTextColor(ContextCompat.getColor(requireContext(), R.color.cartlyGreen))
             setTypeface(null, android.graphics.Typeface.BOLD)
         }
 
-        val priceWasView = TextView(this).apply {
+        val priceWasView = TextView(requireContext()).apply {
             text = priceWas
             textSize = 12f
-            setTextColor(ContextCompat.getColor(this@MainActivity, R.color.textSecondary))
+            setTextColor(ContextCompat.getColor(requireContext(), R.color.textSecondary))
         }
 
         priceLayout.addView(priceNowView)
@@ -374,7 +379,7 @@ class MainActivity : AppCompatActivity() {
         topRow.addView(infoLayout)
         topRow.addView(priceLayout)
 
-        val bottomRow = LinearLayout(this).apply {
+        val bottomRow = LinearLayout(requireContext()).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.END
             layoutParams = LinearLayout.LayoutParams(
@@ -384,11 +389,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         val isFav = favouriteNames.contains(name)
-        val heartBtn = TextView(this).apply {
+        val heartBtn = TextView(requireContext()).apply {
             text = if (isFav) "♥" else "♡"
             textSize = 20f
             setTextColor(if (isFav) Color.parseColor("#E24B4A") else
-                ContextCompat.getColor(this@MainActivity, R.color.textSecondary))
+                ContextCompat.getColor(requireContext(), R.color.textSecondary))
             setPadding(0, 8, 0, 0)
             isClickable = true
             isFocusable = true

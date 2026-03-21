@@ -165,7 +165,6 @@
 
             </HorizontalScrollView>
 
-            <!-- CATEGORY FILTER -->
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -187,11 +186,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="14dp"
                 android:text="This week's specials"
-                android:textColor="@color/textPrimary"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@color/textPrimary"
+                android:padding="14dp" />
 
             <LinearLayout
                 android:id="@+id/dealsContainer"

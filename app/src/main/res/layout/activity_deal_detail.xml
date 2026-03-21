@@ -266,6 +266,22 @@
 
         </LinearLayout>
 
+        <!-- ADD TO BASKET BUTTON -->
+        <TextView
+            android:id="@+id/btnAddToBasket"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🛒 Add to Basket"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:background="@color/cartlyGreen"
+            android:gravity="center"
+            android:padding="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"/>
+
     </LinearLayout>
 
 </ScrollView>
