@@ -1,3 +1,5 @@
+import os
+import json
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -6,11 +8,16 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 import time
-import os
-import json
 
 def init_firebase():
-    cred = credentials.Certificate("cartly-firebase.json")
+    firebase_json = os.environ.get("FIREBASE_CREDENTIALS")
+    if firebase_json:
+        print("Using Firebase credentials from environment...")
+        cred_dict = json.loads(firebase_json)
+        cred = credentials.Certificate(cred_dict)
+    else:
+        print("Using Firebase credentials from file...")
+        cred = credentials.Certificate("cartly-firebase.json")
     firebase_admin.initialize_app(cred)
     return firestore.client()
 
@@ -22,7 +29,7 @@ def categorize(name):
         return "Bread & Bakery"
     elif any(word in name_lower for word in ["chicken", "beef", "lamb", "pork", "mince", "braai", "meat", "sausage", "wors"]):
         return "Meat & Poultry"
-    elif any(word in name_lower for word in ["apple", "banana", "orange", "tomato", "potato", "vegetable", "fruit", "lettuce"]):
+    elif any(word in name_lower for word in ["apple", "banana", "orange", "tomato", "potato", "vegetable", "fruit", "lettuce", "grapes", "avocado"]):
         return "Fruit & Veg"
     elif any(word in name_lower for word in ["cola", "juice", "water", "drink", "soda", "beer", "wine", "cider", "seltzer", "cooler", "spritzer", "guarana"]):
         return "Drinks"
@@ -35,12 +42,28 @@ def categorize(name):
     else:
         return "Other"
 
+def get_emoji(category):
+    emojis = {
+        "Dairy": "🥛",
+        "Bread & Bakery": "🍞",
+        "Meat & Poultry": "🍗",
+        "Fruit & Veg": "🥦",
+        "Drinks": "🥤",
+        "Cooking & Oils": "🫙",
+        "Snacks & Treats": "🍫",
+        "Household": "🧹",
+        "Other": "🛒"
+    }
+    return emojis.get(category, "🛒")
+
 def scrape_checkers(db):
     print("Starting Checkers scraper...")
     options = webdriver.ChromeOptions()
+    options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument("--window-size=1920,1080")
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option("useAutomationExtension", False)
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36")
@@ -101,13 +124,14 @@ def scrape_checkers(db):
 
                 if name and len(name) > 3 and price_now:
                     category = categorize(name)
+                    emoji = get_emoji(category)
                     deals.append({
                         "name": name,
                         "price_now": price_now,
-                        "price_was": price_was,
+                        "price_was": price_was if price_was else "",
                         "store": "Checkers",
                         "category": category,
-                        "emoji": "🛒",
+                        "emoji": emoji,
                         "distance": "Nearby"
                     })
                     print("- " + name + " | " + price_now + " | " + category)
@@ -117,19 +141,18 @@ def scrape_checkers(db):
 
         print("Total deals scraped: " + str(len(deals)))
 
-        print("Pushing to Firebase...")
-        batch = db.batch()
+        if len(deals) > 0:
+            print("Pushing to Firebase...")
+            existing = db.collection("deals").where("store", "==", "Checkers").get()
+            for doc in existing:
+                doc.reference.delete()
 
-        existing = db.collection("deals").where("store", "==", "Checkers").get()
-        for doc in existing:
-            batch.delete(doc.reference)
-        batch.commit()
+            for i, deal in enumerate(deals):
+                db.collection("deals").document("checkers_" + str(i)).set(deal)
 
-        for i, deal in enumerate(deals):
-            doc_ref = db.collection("deals").document("checkers_" + str(i))
-            db.collection("deals").document("checkers_" + str(i)).set(deal)
-
-        print("Successfully pushed " + str(len(deals)) + " deals to Firebase!")
+            print("Successfully pushed " + str(len(deals)) + " deals to Firebase!")
+        else:
+            print("No deals found - not updating Firebase")
 
     except Exception as e:
         print("Error: " + str(e))
