@@ -16,13 +16,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Cartly">
         <activity
-            android:name=".ContainerActivity"
-            android:exported="true">
+            android:name=".SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Cartly">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ContainerActivity"
+            android:exported="false"/>
         <activity android:name=".MainActivity"/>
         <activity android:name=".MainActivity"/>
         <activity android:name=".DealDetailActivity"/>

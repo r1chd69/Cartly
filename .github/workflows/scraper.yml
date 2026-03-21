@@ -1,0 +1,37 @@
+name: Scrape Checkers Deals
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install selenium webdriver-manager firebase-admin
+
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Create Firebase credentials
+        run: |
+          echo '${{ secrets.FIREBASE_CREDENTIALS }}' > cartly-firebase.json
+
+      - name: Run scraper
+        run: |
+          python checkers_scraper.py
+
+      - name: Done
+        run: echo "Scraper finished successfully!"

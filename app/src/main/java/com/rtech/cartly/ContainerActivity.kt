@@ -2,6 +2,8 @@ package com.rtech.cartly
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import android.view.WindowManager
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -11,8 +13,13 @@ class ContainerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_container)
 
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        window.navigationBarColor = android.graphics.Color.parseColor("#F8F8F8")
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            window.decorView.systemUiVisibility =
+                android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        }
 
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
         loadFragment(DealsFragment())
 
         bottomNav.setOnItemSelectedListener { item ->
@@ -24,9 +31,7 @@ class ContainerActivity : AppCompatActivity() {
             }
             true
         }
-    }
-
-    private fun loadFragment(fragment: Fragment) {
+    }    private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
             .commit()

@@ -4,17 +4,16 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.LinearLayout
-import android.graphics.Paint
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.firebase.firestore.FirebaseFirestore
@@ -28,9 +27,9 @@ class DealsFragment : Fragment() {
     private lateinit var locationLabel: TextView
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var categoryContainer: LinearLayout
+    private lateinit var loadingSpinner: ProgressBar
     private var selectedStore = "All"
     private var selectedCategory = "All"
-    private var searchQuery = ""
     private val filterButtons = mutableListOf<TextView>()
 
     override fun onCreateView(
@@ -48,6 +47,7 @@ class DealsFragment : Fragment() {
         locationLabel = view.findViewById(R.id.locationLabel)
         swipeRefresh = view.findViewById(R.id.swipeRefresh)
         categoryContainer = view.findViewById(R.id.categoryContainer)
+        loadingSpinner = view.findViewById(R.id.loadingSpinner)
 
         swipeRefresh.setColorSchemeColors(
             ContextCompat.getColor(requireContext(), R.color.cartlyGreen)
@@ -61,7 +61,6 @@ class DealsFragment : Fragment() {
 
         val prefs = requireContext().getSharedPreferences("CartlyPrefs", Context.MODE_PRIVATE)
         locationLabel.text = prefs.getString("location", "Sandton, Johannesburg")
-
 
         val filterAll = view.findViewById<TextView>(R.id.filterAll)
         val filterCheckers = view.findViewById<TextView>(R.id.filterCheckers)
@@ -108,9 +107,7 @@ class DealsFragment : Fragment() {
 
     private fun buildCategoryButtons(categories: List<String>) {
         categoryContainer.removeAllViews()
-
         val allCategories = listOf("All") + categories.distinct().sorted()
-
         for (category in allCategories) {
             val btn = TextView(requireContext()).apply {
                 text = category
@@ -151,7 +148,10 @@ class DealsFragment : Fragment() {
                 loadDealsFromFirebase()
             }
     }
+
     private fun loadDealsFromFirebase() {
+        loadingSpinner.visibility = View.VISIBLE
+        dealsContainer.removeAllViews()
         db.collection("deals")
             .get()
             .addOnSuccessListener { result ->
@@ -170,6 +170,7 @@ class DealsFragment : Fragment() {
                     ))
                 }
                 if (!isAdded) return@addOnSuccessListener
+                loadingSpinner.visibility = View.GONE
                 val categories = allDeals.map { it["category"] ?: "Other" }
                 buildCategoryButtons(categories)
                 swipeRefresh.isRefreshing = false
@@ -177,13 +178,14 @@ class DealsFragment : Fragment() {
             }
             .addOnFailureListener { e ->
                 if (!isAdded) return@addOnFailureListener
+                loadingSpinner.visibility = View.GONE
                 swipeRefresh.isRefreshing = false
                 android.util.Log.e("CARTLY", "Error: $e")
             }
     }
+
     private fun filterDeals() {
         dealsContainer.removeAllViews()
-
         val filtered = allDeals.filter { deal ->
             val matchesStore = selectedStore == "All" || deal["store"] == selectedStore
             val matchesCategory = selectedCategory == "All" || deal["category"] == selectedCategory
