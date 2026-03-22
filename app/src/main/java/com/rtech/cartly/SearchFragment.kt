@@ -176,7 +176,7 @@ class SearchFragment : Fragment() {
         }
 
         val storeView = TextView(requireContext()).apply {
-            text = "$store • $distance away"
+            text = "$store • $distance"
             textSize = 12f
             setTextColor(ContextCompat.getColor(requireContext(), R.color.textSecondary))
         }

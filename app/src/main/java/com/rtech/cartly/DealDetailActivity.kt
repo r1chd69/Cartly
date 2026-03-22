@@ -24,7 +24,7 @@ class DealDetailActivity : AppCompatActivity() {
 
         findViewById<TextView>(R.id.detailEmoji).text = emoji
         findViewById<TextView>(R.id.detailName).text = name
-        findViewById<TextView>(R.id.detailStore).text = "$store • $distance away"
+        findViewById<TextView>(R.id.detailStore).text = "$store • $distance"
         findViewById<TextView>(R.id.detailStoreName).text = store
         findViewById<TextView>(R.id.detailDistance).text = "$distance away"
         findViewById<TextView>(R.id.detailPriceNow).text = priceNow
